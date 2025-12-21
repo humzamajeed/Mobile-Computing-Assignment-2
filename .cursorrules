@@ -1,0 +1,275 @@
+# Flutter Project Rules - Clean Architecture with Feature-First Structure
+
+## Project Overview
+This is a Flutter 3.x project following Clean Architecture principles with a feature-first folder structure. All code must adhere to these strict guidelines.
+
+## Architecture & Folder Structure
+
+### Feature-First Clean Architecture
+- **ALWAYS** organize code by features, not by layers
+- Each feature must have its own folder under `lib/features/`
+- Each feature folder MUST contain three subfolders:
+  - `data/` - Data sources, models, repository implementations
+  - `domain/` - Entities, repositories (interfaces), use cases
+  - `presentation/` - Pages, widgets, providers/state management
+
+### Folder Structure Example:
+```
+lib/
+  features/
+    feature_name/
+      data/
+        model/          # Data models (DTOs)
+        repositoryImp/  # Repository implementations
+        source/         # Remote/local data sources
+      domain/
+        entities/       # Domain entities (pure Dart classes)
+        repository/     # Repository interfaces/contracts
+        usecase/        # Use cases (business logic)
+      presentation/
+        pages/          # Full page widgets
+        widgets/        # Feature-specific widgets
+        provider/       # State management (Riverpod/BLoC)
+  core/                 # Shared utilities, constants, themes
+    theme/              # Theme configuration
+    l10n/               # Localization files
+    constants/          # App-wide constants
+    errors/             # Error handling
+    network/            # Network configuration
+    extension/          # Dart extensions
+```
+
+## Flutter & Material Guidelines
+
+### Flutter Version
+- **MUST** use Flutter 3.x (minimum SDK: ^3.0.0)
+- **MUST** use Material 3 design system
+- Use `MaterialApp` with `useMaterial3: true`
+- Prefer Material 3 components: `Card`, `FilledButton`, `OutlinedButton`, `SegmentedButton`, etc.
+
+### Widget Guidelines
+- **ALWAYS** prefer functional widgets (stateless/stateful functions) over class-based widgets
+- Use `const` constructors wherever possible for performance
+- Extract widgets into separate files when they exceed 50 lines or have clear responsibilities
+- Use `StatelessWidget` unless state management is required
+
+## State Management
+
+### Preferred: Riverpod
+- **PREFER** Riverpod for state management
+- Use `flutter_riverpod` package
+- Create providers in `presentation/provider/` folder
+- Use `ConsumerWidget` or `ConsumerStatefulWidget` for widgets that need state
+- Follow Riverpod best practices:
+  - Use `StateProvider` for simple state
+  - Use `StateNotifierProvider` for complex state
+  - Use `FutureProvider` for async data
+  - Use `StreamProvider` for streams
+
+### Alternative: BLoC
+- If using BLoC, use `flutter_bloc` package
+- Create BLoCs in `presentation/bloc/` folder
+- Follow BLoC pattern: Events → BLoC → States
+- Use `BlocProvider` and `BlocBuilder` appropriately
+
+### State Management Rules
+- **NEVER** use `setState` in presentation layer for business logic
+- **NEVER** access data sources directly from presentation layer
+- **ALWAYS** use use cases from domain layer
+- State management code goes in `presentation/provider/` or `presentation/bloc/`
+
+## Naming Conventions
+
+### Files
+- **MUST** use `snake_case` for all file names
+- Examples: `user_model.dart`, `auth_repository.dart`, `login_page.dart`
+- Widget files: `user_card.dart`, `product_list_item.dart`
+- Provider files: `auth_provider.dart`, `cart_provider.dart`
+
+### Classes & Types
+- **MUST** use `PascalCase` for all classes, enums, typedefs, and type parameters
+- Examples: `UserModel`, `AuthRepository`, `LoginPage`, `UserCard`
+- Entities: `User`, `Product`, `CartItem`
+- Use cases: `LoginUser`, `GetProducts`, `AddToCart`
+- Models: `UserModel`, `ProductModel`
+
+### Variables & Functions
+- **MUST** use `camelCase` for variables, functions, and parameters
+- Examples: `userName`, `getUserData()`, `isLoading`
+- Private members: `_privateVariable`, `_privateMethod()`
+
+### Constants
+- **MUST** use `lowerCamelCase` for const variables
+- Examples: `const maxRetries = 3;`
+- For enum-like constants, use `PascalCase`: `enum Status { pending, completed }`
+
+### Folders
+- **MUST** use `snake_case` for folder names
+- Examples: `repository_imp/`, `data_source/`, `use_case/`
+
+## No Hardcoded Values
+
+### Strings
+- **NEVER** hardcode strings in the code
+- **MUST** use localization (l10n) for all user-facing strings
+- Use `flutter_localizations` and `intl` packages
+- Create `.arb` files in `lib/core/l10n/` or use `flutter gen-l10n`
+- Access strings via: `AppLocalizations.of(context).stringKey`
+- Example: Instead of `Text('Login')`, use `Text(AppLocalizations.of(context)!.login)`
+
+### Colors
+- **NEVER** hardcode colors (e.g., `Color(0xFF000000)`, `Colors.blue`)
+- **MUST** use theme colors from `Theme.of(context)`
+- Define custom colors in `lib/core/theme/app_colors.dart` or `app_theme.dart`
+- Access colors via: `Theme.of(context).colorScheme.primary`
+- Use Material 3 color schemes: `colorScheme.primary`, `colorScheme.secondary`, `colorScheme.surface`, etc.
+- For custom colors, extend `ColorScheme` or use `ThemeData.extensions`
+
+### Example Theme Setup:
+```dart
+// lib/core/theme/app_theme.dart
+class AppTheme {
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      // ... other theme properties
+    );
+  }
+}
+```
+
+## Code Quality & Best Practices
+
+### Dependency Injection
+- Use `get_it` or Riverpod for dependency injection
+- Register dependencies in `lib/core/di/injection_container.dart` or similar
+- **NEVER** create dependencies directly in widgets or use cases
+
+### Error Handling
+- **MUST** handle errors properly using try-catch blocks
+- Use `Either<Failure, T>` pattern or exceptions from `lib/core/errors/`
+- Never let exceptions bubble up to UI without handling
+- Show user-friendly error messages via localization
+
+### Network & Data
+- **MUST** use repository pattern - never access data sources directly from presentation
+- Use data models in `data/model/` for API responses
+- Map data models to domain entities in repository implementations
+- Use use cases for all business logic operations
+
+### Testing
+- Write unit tests for use cases and repositories
+- Write widget tests for presentation layer
+- Use `mockito` or `mocktail` for mocking
+- Test files should mirror source structure in `test/` folder
+
+### Performance
+- Use `const` constructors wherever possible
+- Avoid unnecessary rebuilds with proper state management
+- Use `ListView.builder` for long lists
+- Lazy load images and data
+- Profile app regularly with Flutter DevTools
+
+## GitHub Best Practices
+
+### Code Organization
+- Keep commits atomic and focused
+- Write clear, descriptive commit messages
+- Use conventional commits format: `feat:`, `fix:`, `refactor:`, `docs:`, etc.
+
+### Documentation
+- **MUST** include doc comments for public APIs
+- Use `///` for documentation comments
+- Document complex business logic
+- Keep README.md updated with setup instructions
+
+### Git Hygiene
+- **NEVER** commit:
+  - `.dart_tool/`, `build/`, `.flutter-plugins`, `.flutter-plugins-dependencies`
+  - IDE-specific files (`.idea/`, `.vscode/`)
+  - Generated files (unless necessary)
+- **MUST** have a proper `.gitignore` for Flutter projects
+- Keep dependencies up to date in `pubspec.yaml`
+
+### Code Review Checklist
+- [ ] Follows Clean Architecture structure
+- [ ] Uses proper naming conventions
+- [ ] No hardcoded strings or colors
+- [ ] Proper error handling
+- [ ] Uses state management correctly
+- [ ] Has appropriate tests
+- [ ] Follows Material 3 design
+- [ ] Uses const constructors where possible
+
+## Import Organization
+- Group imports in this order:
+  1. Dart SDK imports
+  2. Flutter imports
+  3. Package imports
+  4. Project imports (relative imports last)
+- Use absolute imports for project files: `package:app_name/...`
+- Separate groups with blank lines
+
+## Example Structure
+
+### Good Example:
+```dart
+// lib/features/auth/presentation/pages/login_page.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:f2023_538_assignment_2/core/l10n/app_localizations.dart';
+import 'package:f2023_538_assignment_2/core/theme/app_theme.dart';
+import 'package:f2023_538_assignment_2/features/auth/presentation/provider/auth_provider.dart';
+
+class LoginPage extends ConsumerWidget {
+  const LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.login),
+        backgroundColor: theme.colorScheme.surface,
+      ),
+      body: const LoginForm(),
+    );
+  }
+}
+```
+
+### Bad Example (DO NOT DO THIS):
+```dart
+// ❌ Hardcoded strings
+Text('Login')
+
+// ❌ Hardcoded colors
+Container(color: Color(0xFF000000))
+
+// ❌ Wrong naming
+class loginPage extends StatelessWidget {}  // Should be LoginPage
+class Login_page extends StatelessWidget {} // Should be LoginPage
+
+// ❌ Wrong file name
+LoginPage.dart  // Should be login_page.dart
+```
+
+## Additional Rules
+- **ALWAYS** run `flutter analyze` before committing
+- **ALWAYS** format code with `dart format .`
+- Use `analysis_options.yaml` for linting rules
+- Keep functions small and focused (single responsibility)
+- Use meaningful variable and function names
+- Comment complex logic, but prefer self-documenting code
+- Follow SOLID principles
+- Keep presentation layer thin - business logic belongs in domain layer
+
+## When in Doubt
+1. Check existing codebase patterns
+2. Follow Flutter official documentation
+3. Refer to Clean Architecture principles
+4. Prioritize maintainability and readability
+
