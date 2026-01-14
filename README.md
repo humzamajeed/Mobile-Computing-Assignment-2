@@ -19,17 +19,34 @@ This Flutter application showcases a complete e-commerce experience with seamles
 
 ## 🖼️ Screenshots
 
-### Login Screen
-![Login Screen](./screenshots/login.jpg)
-
-### Home/Products Screen
-![Home Screen](./screenshots/home.jpg)
-
-### Shopping Cart
-![Cart Screen](./screenshots/cart.jpg)
-
-### Product Description
-![Product Description](./screenshots/description.jpg)
+<div align="center">
+  <h3>Key App Screens</h3>
+  
+  <table>
+    <tr>
+      <td align="center">
+        <img src="screenshots/login.jpg" alt="Login Screen" width="250"/>
+        <br />
+        <b>Login</b>
+      </td>
+      <td align="center">
+        <img src="screenshots/home.jpg" alt="Home Screen" width="250"/>
+        <br />
+        <b>Home / Products</b>
+      </td>
+      <td align="center">
+        <img src="screenshots/description.jpg" alt="Product Description" width="250"/>
+        <br />
+        <b>Product Details</b>
+      </td>
+      <td align="center">
+        <img src="screenshots/cart.jpg" alt="Cart Screen" width="250"/>
+        <br />
+        <b>Shopping Cart</b>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## 🛠️ Technologies & Tools
 
@@ -150,8 +167,8 @@ lib/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/f2023_538_assignment_2.git
-   cd f2023_538_assignment_2
+   git clone https://github.com/humzamajeed/Mobile-Computing-Assignment-2.git
+   cd Mobile-Computing-Assignment-2
    ```
 
 2. **Install dependencies**
